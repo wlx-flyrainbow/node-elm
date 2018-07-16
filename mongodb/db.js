@@ -1,16 +1,20 @@
 'use strict';
 
 import mongoose from 'mongoose';
+// config-lite 是一个轻量的读取配置文件的模块
+// 会根据环境变量（NODE_ENV）的不同从当前执行进程目录下的 config 目录加载不同的配置文件
 import config from 'config-lite';
+// chalk.<style>[.<style>...](string,[string...])
 import chalk from 'chalk';
 mongoose.connect(config.url, {useMongoClient:true});
+// 使用原生promise，mongoose自带promise不再支持了
 mongoose.Promise = global.Promise;
 
 const db = mongoose.connection;
 
 db.once('open' ,() => {
 	console.log(
-    chalk.green('连接数据库成功')
+    chalk.greenBright('连接数据库成功')
   );
 })
 

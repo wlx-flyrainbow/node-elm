@@ -155,6 +155,9 @@ class Shop extends AddressComponent{
 				})
 			}
 			try{
+				// 在集合中创建一个文档 如果是Entity，使用save方法，如果是Model，使用create方法
+				// Model.create(doc(s), [callback])
+				// Entity.save(callback)
 				//保存数据，并增加对应食品种类的数量
 				const shop = new ShopModel(newShop);
 				await shop.save();
