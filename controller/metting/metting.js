@@ -9,20 +9,7 @@ import dtime from 'time-formater'
 class Metting extends BaseComponent{
 	constructor(){
 		super();
-		this.defaultData = [{
-			name: '热销榜',
-			description: '大家喜欢吃，才叫真好吃。', 
-			icon_url: "5da3872d782f707b4c82ce4607c73d1ajpeg",
-			is_selected: true,
-			type: 1,
-			foods: [],
-		}, {
-			name: '优惠',
-			description: '美味又实惠, 大家快来抢!', 
-			icon_url: "4735c4342691749b8e1a531149a46117jpeg",
-			type: 1,
-			foods: [],
-		}]
+		this.defaultData = []
 		// this.initData = this.initData.bind(this);
 		this.addSchedule = this.addSchedule.bind(this);
 		this.getMetting = this.getMetting.bind(this);
@@ -130,12 +117,12 @@ class Metting extends BaseComponent{
 		}
 	}
 	async getMetting(req, res, next){
-		const metting_id = req.params.metting_id;
+		const metting_id = req.query.metting_id;
 		try{
-			const Metting_list = await MettingModel.find({metting_id});
+			const Metting = await MettingModel.findOne({id: metting_id});
 			res.send({
 				status: 1,
-				Metting_list,
+				Metting,
 			})
 		}catch(err){
 			console.log('获取会议列表失败');
