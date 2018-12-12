@@ -18,39 +18,24 @@ class Metting extends BaseComponent{
 		this.getSpecfoods = this.getSpecfoods.bind(this);
 		this.updateFood = this.updateFood.bind(this);
 	}
-	/* async initData(metting_id){
-		for (let i = 0; i < this.defaultData.length; i++) {
-			let metting_id;
-			try{
-				metting_id = await this.getId('metting_id');
-			}catch(err){
-				console.log('获取metting_id失败');
-				throw new Error(err);
-			}
-			const defaultData = this.defaultData[i];
-			const Metting = {...defaultData, id: metting_id};
-			const newFood = new MenuModel(Metting);
-			try{
-				await newFood.save();
-				console.log('初始化食品数据成功');
-			}catch(err){
-				console.log('初始化食品数据失败');
-				throw new Error(err);
-			}
-		}
-	} */
 	async addMetting(req, res, next){
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			try{
-				if (!fields.metting_name) {
+				if (!fields.exhi_name) {
 					throw new Error('必须填写会议名称');
-				}else if(!fields.metting_time){
+				}else if(!fields.exhi_topic){
+					throw new Error('必须填写会议主题');
+				}else if(!fields.exhi_date){
 					throw new Error('必须填写会议时间');
-				}else if(!fields.metting_address){
+				}else if(!fields.exhi_address){
 					throw new Error('必须填写会议地址');
-				}else if(!fields.city){
+				}else if(!fields.exhi_city_name){
 					throw new Error('必须填写会议城市');
+				}else if(!fields.exhi_schedule){
+					throw new Error('必须添加会议日程');
+				}else if(!fields.exhi_is_important){
+					throw new Error('必须选择会议是否重要');
 				}
 			}catch(err){
 				console.log(err.message, err);
@@ -61,11 +46,10 @@ class Metting extends BaseComponent{
 				})
 				return
 			}
-			let metting_id;
 			try{
-				metting_id = await this.getId('metting_id');
+				const exhi_id = await this.getId('exhi_id');
 			}catch(err){
-				console.log('获取metting_id失败');
+				console.log('获取exhi_id失败');
 				res.send({
 					type: 'ERROR_DATA',
 					message: '获取数据失败'
@@ -73,13 +57,13 @@ class Metting extends BaseComponent{
 				return
 			}
 			const mettingObj = {
-				metting_name: fields.metting_name,
-				metting_time: fields.metting_time,
-				id: metting_id,
-				create_time: dtime().format('YYYY-MM-DD HH:mm'),
-				metting_address: fields.metting_address,
-				metting_schedule: [],
-				city: fields.city
+				exhi_name: fields.exhi_name,
+				exhi_time: fields.exhi_data,
+				id: exhi_id,
+				exhi_address: fields.exhi_address,
+				exhi_schedule: [],
+				exhi_is_important: fields.exhi_is_important,
+				exhi_city_name: fields.exhi_city_name
 			}
 			const newMetting = new MettingModel(mettingObj);
 			// await MettingModel.create(newMetting)
@@ -117,12 +101,12 @@ class Metting extends BaseComponent{
 		}
 	}
 	async getMetting(req, res, next){
-		const metting_id = req.query.metting_id;
+		const exhi_id = req.query.exhi_id;
 		try{
-			const Metting = await MettingModel.findOne({id: metting_id});
+			const Metting = await MettingModel.findOne({id: exhi_id});
 			res.send({
 				status: 1,
-				Metting,
+				data: Metting,
 			})
 		}catch(err){
 			console.log('获取会议列表失败');
@@ -139,7 +123,7 @@ class Metting extends BaseComponent{
 			try{
 				if (!fields.desc) {
 					throw new Error('必须填写日程名称');
-				}else if(!fields.metting_id){
+				}else if(!fields.exhi_id){
 					throw new Error('会议ID错误');
 				}else if(!fields.time){
 					throw new Error('必须填写日程时间');
@@ -156,7 +140,7 @@ class Metting extends BaseComponent{
 			let Metting;
 			let restaurant;
 			try{
-				Metting = await MettingModel.findOne({id: fields.metting_id});
+				Metting = await MettingModel.findOne({id: fields.exhi_id});
 			}catch(err){
 				console.log('获取会议ID失败');
 				res.send({
@@ -179,7 +163,7 @@ class Metting extends BaseComponent{
 				return
 			}
 			const newSchedule = {
-				metting_id: fields.metting_id,
+				exhi_id: fields.exhi_id,
 				id: schedule_id,
 				desc: fields.desc,
 				create_time: dtime().format('YYYY-MM-DD HH:mm'),
@@ -292,8 +276,8 @@ class Metting extends BaseComponent{
 		}
 	}
 	async getMenuDetail(req, res, next){
-		const metting_id = req.params.metting_id;
-		if (!metting_id || !Number(metting_id)) {
+		const exhi_id = req.params.exhi_id;
+		if (!exhi_id || !Number(exhi_id)) {
 			console.log('获取Menu详情参数ID错误');
 			res.send({
 				status: 0,
@@ -303,7 +287,7 @@ class Metting extends BaseComponent{
 			return
 		}
 		try{
-			const menu = await MenuModel.findOne({id: metting_id}, '-_id');
+			const menu = await MenuModel.findOne({id: exhi_id}, '-_id');
 			res.send(menu)
 		}catch(err){
 			console.log('获取Menu详情失败', err);
@@ -367,25 +351,25 @@ class Metting extends BaseComponent{
 				})
 				return 
 			}
-			const {name, item_id, description = "", image_path, metting_id, new_metting_id} = fields;
+			const {name, item_id, description = "", image_path, exhi_id, new_exhi_id} = fields;
 			try{
 				if (!name) {
 					throw new Error('食品名称错误');
 				}else if(!item_id || !Number(item_id)){
 					throw new Error('食品ID错误');
-				}else if(!metting_id || !Number(metting_id)){
+				}else if(!exhi_id || !Number(exhi_id)){
 					throw new Error('食品分类ID错误');
 				}else if(!image_path){
 					throw new Error('食品图片地址错误');
 				}
 				const [specfoods, specifications] = await this.getSpecfoods(fields, item_id);
 				let newData;
-				if (new_metting_id !== metting_id) {
-					newData = {name, description, image_path, metting_id: new_metting_id, specfoods, specifications};
+				if (new_exhi_id !== exhi_id) {
+					newData = {name, description, image_path, exhi_id: new_exhi_id, specfoods, specifications};
 					const food = await FoodModel.findOneAndUpdate({item_id}, {$set: newData});
 
-					const menu = await MenuModel.findOne({id: metting_id})
-					const targetmenu = await MenuModel.findOne({id: new_metting_id})
+					const menu = await MenuModel.findOne({id: exhi_id})
+					const targetmenu = await MenuModel.findOne({id: new_exhi_id})
 
 					let subFood = menu.foods.id(food._id);
 					subFood.set(newData)
@@ -398,7 +382,7 @@ class Metting extends BaseComponent{
 					newData = {name, description, image_path, specfoods, specifications};
 					const food = await FoodModel.findOneAndUpdate({item_id}, {$set: newData});
 
-					const menu = await MenuModel.findOne({id: metting_id})
+					const menu = await MenuModel.findOne({id: exhi_id})
 					let subFood = menu.foods.id(food._id);
 					subFood.set(newData)
 					await menu.save()
@@ -431,7 +415,7 @@ class Metting extends BaseComponent{
 		}
 		try{
 			const food = await FoodModel.findOne({item_id: food_id});
-			const menu = await MenuModel.findOne({id: food.metting_id})
+			const menu = await MenuModel.findOne({id: food.food_id})
 			let subFood = menu.foods.id(food._id);
 			await subFood.remove()
 			await menu.save()

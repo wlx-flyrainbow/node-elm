@@ -8,7 +8,7 @@ const ScheduleSchema = new Schema({
 	desc: String,
 	time: String,
 	id: Number,
-	metting_id: Number,
+	exhi_id: Number,
 	create_time: String
 })
 

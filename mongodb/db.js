@@ -6,6 +6,9 @@ import mongoose from 'mongoose';
 import config from 'config-lite';
 // chalk.<style>[.<style>...](string,[string...])
 import chalk from 'chalk';
+console.log(
+  chalk.red(config.url)
+);
 mongoose.connect(config.url, {useMongoClient:true});
 // 使用原生promise，mongoose自带promise不再支持了
 mongoose.Promise = global.Promise;

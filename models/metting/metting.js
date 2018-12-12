@@ -5,21 +5,16 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
 const mettingSchema = new Schema({
-	metting_name: String,
-	metting_time: String,
+	exhi_name: String,
+	exhi_topic: String,
+	exhi_time: String,
+	exhi_date: String,
 	id: Number,
-	create_time: String,
-	metting_address: String,
-	metting_schedule: [
-		{
-			desc: String,
-			time: String,
-			id: Number,
-			metting_id: Number,
-			create_time: String
-		}
-	],
-	city: String
+	exhi_address: String,
+	exhi_is_important: String,
+	exhi_schedule: [],
+	exhi_city_code: String,
+	exhi_city_name: String
 })
 
 mettingSchema.index({id: 1});

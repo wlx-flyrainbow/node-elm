@@ -11,7 +11,7 @@ qiniu.conf.SECRET_KEY = 'XNIW2dNffPBdaAhvm9dadBlJ-H6yyCTIJLxNM_N6';
 
 export default class BaseComponent {
 	constructor(){
-		this.idList = ['admin_id', 'metting_id', 'schedule_id', 'statis_id', 'img_id', 'sku_id'];
+		this.idList = ['admin_id', 'metting_id', 'exhi_id', 'schedule_id', 'statis_id', 'img_id', 'sku_id'];
 		this.imgTypeList = ['shop', 'food', 'avatar','default'];
 		this.uploadImg = this.uploadImg.bind(this)
 		this.qiniu = this.qiniu.bind(this)
@@ -67,6 +67,7 @@ export default class BaseComponent {
 		}
 		try{
 			const idData = await Ids.findOne();
+			console.log('idData[type]', idData[type])
 			idData[type] ++ ;
 			await idData.save();
 			return idData[type]
